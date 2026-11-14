@@ -90,6 +90,25 @@ To install the project on your computer, follow these steps:
    npm run sqlz -- db:seed:all
    ```
 
+### Third-party sign in (optional)
+
+Users can sign up and sign in with any [OpenID Connect](https://openid.net/developers/how-connect-works/) provider (Google, Microsoft, Auth0, Keycloak, Okta...). It is off until `OIDC_ISSUER` and `OIDC_CLIENT_ID` are set, see [`.env.example`](backend/.env.example). Requires Node.js `v20+`.
+
+- **Sign up / sign in**: a "Sign up with _Provider_" button appears on the sign up and sign in pages. An account is created on the first visit; an existing password account with the same email is never linked automatically.
+- **Migration**: a password account can be migrated to the provider from its Settings page. This is permanent: the password is deleted, password sign in stops working and there is no way back.
+- **Logout** also signs out of the provider when it supports [RP-initiated logout](https://openid.net/specs/openid-connect-rpinitiated-1_0.html) (`end_session_endpoint`). For providers that do not (e.g. Google), the access granted to the app is revoked instead, as they offer no way to end their own session.
+
+Register these URLs with the provider, `APP_URL` being the public URL of the app (`http://localhost:3000` in development):
+
+- Redirect URI: `<APP_URL>/api/auth/callback`
+- Post-logout redirect URI: `<APP_URL>/`
+
+To try it locally without registering anywhere, use the bundled mock provider (development only, it accepts any login and password): set the `OIDC_*` variables to the mock values from [`.env.example`](backend/.env.example) and run it next to the development server:
+
+```bash
+npm run dev:idp
+```
+
 ### Usage
 
 #### Development Server

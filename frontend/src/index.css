@@ -26,3 +26,20 @@ button:focus {
   justify-content: center;
   flex-direction: column;
 }
+
+/* Third-party sign in */
+.third-party-auth,
+.sign-in-method {
+  clear: both;
+  padding-top: 1rem;
+}
+
+.third-party-auth {
+  text-align: center;
+}
+
+.last-login {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}

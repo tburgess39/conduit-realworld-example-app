@@ -3,7 +3,7 @@ const privateKey = process.env.JWT_KEY;
 
 module.exports.jwtSign = async (payload) => {
   return jwt.sign(
-    { username: payload.username, email: payload.email },
+    { username: payload.username, email: payload.email, sid: payload.sid },
     privateKey,
   );
 };

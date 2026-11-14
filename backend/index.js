@@ -6,6 +6,7 @@ const cors = require("cors");
 const { sequelize } = require("./models");
 const errorHandler = require("./middleware/errorHandler");
 
+const authRoutes = require("./routes/auth");
 const usersRoutes = require("./routes/users");
 const userRoutes = require("./routes/user");
 const articlesRoutes = require("./routes/articles");
@@ -30,6 +31,7 @@ if (process.env.NODE_ENV === "production") {
 } else {
   app.get("/", (req, res) => res.json({ status: "API is running on /api" }));
 }
+app.use("/api/auth", authRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/articles", articlesRoutes);

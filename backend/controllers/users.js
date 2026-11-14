@@ -1,6 +1,13 @@
 const { User } = require("../models");
 const { jwtSign } = require("../helper/jwt");
 const { bcryptHash, bcryptCompare } = require("../helper/bcrypt");
+const { providerName } = require("../helper/oidc");
+const {
+  PASSWORD_LOGIN,
+  appendAccountInfo,
+  isThirdParty,
+  recordLogin,
+} = require("../helper/account");
 const {
   ValidationError,
   FieldRequiredError,
@@ -28,8 +35,10 @@ const signUp = async (req, res, next) => {
       image: image,
       password: await bcryptHash(password),
     });
+    await recordLogin(newUser, PASSWORD_LOGIN);
 
     newUser.dataValues.token = await jwtSign(newUser);
+    appendAccountInfo(newUser);
 
     res.status(201).json({ user: newUser });
   } catch (error) {
@@ -45,10 +54,19 @@ const signIn = async (req, res, next) => {
     const existentUser = await User.findOne({ where: { email: user.email } });
     if (!existentUser) throw new NotFoundError("Email", "sign in first");
 
+    // These accounts have no password, for good
+    if (isThirdParty(existentUser)) {
+      throw new ValidationError(
+        `This account signs in with ${providerName}, not with a password`,
+      );
+    }
+
     const pwd = await bcryptCompare(user.password, existentUser.password);
     if (!pwd) throw new ValidationError("Wrong email/password combination");
+    await recordLogin(existentUser, PASSWORD_LOGIN);
 
     existentUser.dataValues.token = await jwtSign(user);
+    appendAccountInfo(existentUser);
 
     res.json({ user: existentUser });
   } catch (error) {

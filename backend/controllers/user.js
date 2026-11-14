@@ -1,5 +1,14 @@
-const { UnauthorizedError } = require("../helper/customErrors");
+const {
+  UnauthorizedError,
+  ValidationError,
+} = require("../helper/customErrors");
 const { bcryptHash } = require("../helper/bcrypt");
+const { providerName } = require("../helper/oidc");
+const { appendAccountInfo, isThirdParty } = require("../helper/account");
+
+// Everything else on the account (how it signs in, its login history...) is
+// not the user's to edit.
+const EDITABLE_FIELDS = ["bio", "email", "image", "username"];
 
 //* Current User
 const currentUser = async (req, res, next) => {
@@ -9,6 +18,7 @@ const currentUser = async (req, res, next) => {
 
     loggedUser.dataValues.email = req.headers.email;
     delete req.headers.email;
+    appendAccountInfo(loggedUser);
 
     res.json({ user: loggedUser });
   } catch (error) {
@@ -27,17 +37,22 @@ const updateUser = async (req, res, next) => {
       user,
     } = req.body;
 
-    Object.entries(user).forEach((entry) => {
-      const [key, value] = entry;
-
-      if (value !== undefined && key !== "password") loggedUser[key] = value;
+    EDITABLE_FIELDS.forEach((key) => {
+      if (user[key] !== undefined) loggedUser[key] = user[key];
     });
 
-    if (password !== undefined || password !== "") {
+    if (password) {
+      if (isThirdParty(loggedUser)) {
+        throw new ValidationError(
+          `This account signs in with ${providerName}, it cannot have a password`,
+        );
+      }
+
       loggedUser.password = await bcryptHash(password);
     }
 
     await loggedUser.save();
+    appendAccountInfo(loggedUser);
 
     res.json({ user: loggedUser });
   } catch (error) {

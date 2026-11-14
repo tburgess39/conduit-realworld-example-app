@@ -9,6 +9,7 @@ import reportWebVitals from "./reportWebVitals";
 import Article from "./routes/Article/Article";
 import CommentsSection from "./routes/Article/CommentsSection";
 import ArticleEditor from "./routes/ArticleEditor";
+import AuthCallback from "./routes/AuthCallback";
 import Home from "./routes/Home";
 import HomeArticles from "./routes/HomeArticles";
 import Login from "./routes/Login";
@@ -31,6 +32,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 
             <Route path="login" element={<Login />} />
             <Route path="register" element={<SignUp />} />
+            <Route path="auth/callback" element={<AuthCallback />} />
 
             <Route path="settings" element={<Settings />} />
 

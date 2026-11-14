@@ -7,6 +7,9 @@ async function getUser({ headers }) {
 
     return data.user;
   } catch (error) {
+    // Lets the caller tell a token the server rejects from other failures
+    if (error.response?.status === 401) throw error;
+
     errorHandler(error);
   }
 }

@@ -78,13 +78,15 @@ function SettingsForm() {
             handler={inputHandler}
           ></FormFieldset>
 
-          <FormFieldset
-            type="password"
-            name="password"
-            value={password}
-            placeholder="Password"
-            handler={inputHandler}
-          ></FormFieldset>
+          {!loggedUser.authProvider && (
+            <FormFieldset
+              type="password"
+              name="password"
+              value={password}
+              placeholder="Password"
+              handler={inputHandler}
+            ></FormFieldset>
+          )}
 
           {!inactive && (
             <button

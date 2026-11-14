@@ -1,6 +1,7 @@
 import { useState } from "react";
 import AuthPageContainer from "../components/AuthPageContainer";
 import SignUpForm from "../components/SignUpForm";
+import ThirdPartyButton from "../components/ThirdPartyButton";
 
 function SignUp() {
   const [errorMessage, setErrorMessage] = useState();
@@ -17,6 +18,7 @@ function SignUp() {
       title="Sign up"
     >
       <SignUpForm onError={handleError} />
+      <ThirdPartyButton action="Sign up" />
     </AuthPageContainer>
   );
 }
